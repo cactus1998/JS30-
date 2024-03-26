@@ -12,7 +12,8 @@
 
     <div class="controls">
         <label for="spacing">Spacing:</label>
-        <input id="spacing" type="range" name="spacing" min="10" max="200" value="10" data-sizing="px">
+        <!-- 這是一個 <input> 元素，類型為 range，它允許使用者以滑塊的形式選擇一個範圍內的值。它有一個 ID 屬性為 blur，名稱為 blur，最小值為 10，最大值為 200，初始值為 0。data-sizing 屬性設置為 px，這是一個自定義的數據屬性，用於指定單位。 -->
+        <input id="spacing" type="range" name="spacing" min="10" max="200" value="0" data-sizing="px">
 
         <label for="blur">Blur:</label>
         <input id="blur" type="range" name="blur" min="0" max="25" value="10" data-sizing="px">
@@ -27,6 +28,26 @@
         /*
       misc styles, nothing to do with CSS variables
     */
+
+        :root {
+            --base: #ffc600;
+            --spacing: 10px;
+            --blur: 10px;
+        }
+
+        img {
+            padding: var(--spacing);
+            background: var(--base);
+            filter: blur(var(--blur));
+        }
+
+        .hl {
+            color:  var(--base);
+        }
+
+        /*
+            misc styles, nothing to do with CSS variables
+            */
 
         body {
             text-align: center;
@@ -47,6 +68,23 @@
     </style>
 
     <script>
+        // 選取 HTML 中所有具有 .controls 類的 <input> 元素
+        const inputs = document.querySelectorAll('.controls input');
+
+        // 定義一個事件處理函數，用於更新 CSS 變數的值
+        function handleUpdate() {
+            // 獲取用於更新 CSS 變數的後綴，若未提供則使用空字串
+            const suffix = this.dataset.sizing || '';
+            // 使用 document.documentElement.style.setProperty() 方法來設置 CSS 變數的值
+            // 透過 `${this.name}`，CSS 變數的名稱將與 <input> 元素的 name 屬性相對應
+            // 透過 `${this.value + suffix}`，<input> 元素的值將與後綴結合，然後設置為 CSS 變數的值
+            document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+        }
+
+        // 對所有 <input> 元素添加 change 事件監聽器，當值發生變化時觸發 handleUpdate 函數
+        inputs.forEach(input => input.addEventListener('change', handleUpdate));
+        // 對所有 <input> 元素添加 mousemove 事件監聽器，當滑鼠移動時觸發 handleUpdate 函數
+        inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
     </script>
 
 </body>
