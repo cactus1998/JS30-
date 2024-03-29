@@ -31,6 +31,7 @@
         .panels {
             min-height: 100vh;
             overflow: hidden;
+            display: flex;
         }
 
         .panel {
@@ -48,6 +49,10 @@
             font-size: 20px;
             background-size: cover;
             background-position: center;
+            flex: 1;
+            justify-content: center;
+            display: flex;
+            flex-direction: column;
         }
 
         .panel1 {
@@ -75,6 +80,26 @@
             margin: 0;
             width: 100%;
             transition: transform 0.5s;
+            flex: 1 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .panel>*:first-child {
+            transform: translateY(-100%);
+        }
+
+        .panel.open-active>*:first-child {
+            transform: translateY(0);
+        }
+
+        .panel>*:last-child {
+            transform: translateY(100%);
+        }
+
+        .panel.open-active>*:last-child {
+            transform: translateY(0);
         }
 
         .panel p {
@@ -89,7 +114,14 @@
         }
 
         .panel.open {
+            flex: 5;
             font-size: 40px;
+        }
+
+        @media only screen and (max-width: 600px) {
+            .panel p {
+                font-size: 1em;
+            }
         }
     </style>
 
@@ -123,6 +155,27 @@
     </div>
 
     <script>
+        // 獲取所有 .panel 元素
+        const panels = document.querySelectorAll('.panel');
+
+        // 定義 toggleOpen() 函數
+        function toggleOpen() {
+            // 在元素上切換 open 類名
+            this.classList.toggle('open');
+        }
+
+        // 定義 toggleActive() 函數
+        function toggleActive(event) {
+            // 檢查過渡是否影響了元素的 flex-grow 屬性
+            if (event.propertyName.includes('flex-grow')) {
+                // 在元素上切換 open-active 類名
+                this.classList.toggle('open-active');
+            }
+        }
+
+        // 為每個 .panel 元素添加 click transitionend 事件偵聽器
+        panels.forEach(panel => panel.addEventListener('click', toggleOpen));
+        panels.forEach(panel => panel.addEventListener('transitionend', toggleActive));
 
     </script>
 
