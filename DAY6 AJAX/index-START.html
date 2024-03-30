@@ -20,7 +20,140 @@
     <script>
         const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
+        const cities = [];
+        fetch(endpoint)
+            // 將 API 回傳的資料轉換為 JSON 格式
+            .then(blob => blob.json())
+            // 在獲取到資料後，將資料推送到 cities 陣列中
+            .then(data => cities.push(...data));
+
+        function findMatches(wordToMatch, cities) {
+            // 使用 filter 方法將符合條件的城市篩選出來
+            return cities.filter(place => {
+                // 創建一個正則表達式，用於進行城市名或州名的搜索
+                const regex = new RegExp(wordToMatch, 'gi');
+                // 檢查城市名或州名是否與搜索字串匹配，如果匹配則將其保留在篩選結果中
+                return place.city.match(regex) || place.state.match(regex);
+            });
+        }
+
+
+        function numberWithCommas(x) {
+            // 使用正則表達式將數字格式化為千位分隔符表示法
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        function displayMatches() {
+            // 使用 findMatches 函數找到與使用者輸入匹配的城市資訊，並存儲在 matchArray 陣列中
+            const matchArray = findMatches(this.value, cities);
+
+            // 將 matchArray 陣列轉換為 HTML 字符串
+            const html = matchArray.map(place => {
+                // 創建一個正則表達式，用於將匹配的部分高亮顯示
+                const regex = new RegExp(this.value, 'gi');
+                // 將城市名中與使用者輸入匹配的部分高亮顯示
+                const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+                // 將州名中與使用者輸入匹配的部分高亮顯示
+                const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+                // 構建包含城市名、州名和人口的 HTML 元素
+                return `
+        <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+        </li>
+        `;
+            }).join(''); // 使用 join() 方法將所有 HTML 元素連接為一個字符串
+
+            // 將構建好的 HTML 字符串插入到 suggestions 元素中，用於顯示結果
+            suggestions.innerHTML = html;
+        }
+
+        const searchInput = document.querySelector('.search');
+        const suggestions = document.querySelector('.suggestions');
+
+        searchInput.addEventListener('change', displayMatches);
+        searchInput.addEventListener('keyup', displayMatches);
+
     </script>
 </body>
 
 </html>
+
+<style>
+    html {
+        box-sizing: border-box;
+        background: #728fb4;
+        font-family: 'helvetica neue';
+        font-size: 20px;
+        font-weight: 200;
+    }
+
+    *,
+    *:before,
+    *:after {
+        box-sizing: inherit;
+    }
+
+    input {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .search-form {
+        max-width: 400px;
+        margin: 50px auto;
+    }
+
+    input.search {
+        margin: 0;
+        text-align: center;
+        outline: 0;
+        border: 10px solid #F7F7F7;
+        width: 120%;
+        left: -10%;
+        position: relative;
+        top: 10px;
+        z-index: 2;
+        border-radius: 5px;
+        font-size: 40px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.12), inset 0 0 2px rgba(0, 0, 0, 0.19);
+    }
+
+    .suggestions {
+        margin: 0;
+        padding: 0;
+        position: relative;
+        /*perspective: 20px;*/
+    }
+
+    .suggestions li {
+        background: white;
+        list-style: none;
+        border-bottom: 1px solid #D8D8D8;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.14);
+        margin: 0;
+        padding: 20px;
+        transition: background 0.2s;
+        display: flex;
+        justify-content: space-between;
+        text-transform: capitalize;
+    }
+
+    .suggestions li:nth-child(even) {
+        transform: perspective(100px) rotateX(3deg) translateY(2px) scale(1.001);
+        background: linear-gradient(to bottom, #ffffff 0%, #EFEFEF 100%);
+    }
+
+    .suggestions li:nth-child(odd) {
+        transform: perspective(100px) rotateX(-3deg) translateY(3px);
+        background: linear-gradient(to top, #ffffff 0%, #EFEFEF 100%);
+    }
+
+    span.population {
+        font-size: 15px;
+    }
+
+    .hl {
+        background: #ffc600;
+    }
+</style>
