@@ -8,8 +8,64 @@
 </head>
 
 <body>
-    <canvas id="draw" width="800" height="800"></canvas>
+    <canvas id="draw" width="100%" height="100%"></canvas>
+
     <script>
+        const canvas = document.querySelector('#draw');
+        const ctx = canvas.getContext('2d'); // canvas 的操作元素
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        ctx.strokeStyle = '#BADA55'; // 線條顏色
+        ctx.lineJoin = 'round'; // 線條連接樣式（轉角）
+        ctx.lineCap = 'round'; // 線條結束樣式
+        ctx.lineWidth = 100; // 線條寬度
+        let isDrawing = false; // 判斷是否執行畫圖中
+        let lastX = 0;
+        let lastY = 0;
+        let hue = 0; // 色相值，在hsl中使用
+        let direction = true; // 判斷粗細增減用
+
+        function draw(e) {
+            // 判斷是否`isDrawing`，`false`則`return`不觸發此function
+            if (!isDrawing) { return; }
+            // 設定線條顏色為hsl模式，吃變數hue
+            ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+            // 起始畫圖路徑
+            ctx.beginPath();
+            // 將路徑指針移動到X、Y點
+            ctx.moveTo(lastX, lastY);
+            // 將起始點與目前滑鼠位置的X、Y用線條連接起來
+            ctx.lineTo(e.offsetX, e.offsetY);
+            // 將線條繪製出來
+            ctx.stroke();
+            // 把結束點放進X、Y變數中
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+
+            // 做顏色的變化效果，當色相值超過360後歸零
+            hue++;
+            if (hue >= 360) {
+                hue = 0;
+            }
+            // 做線條寬度的變化效果，當寬度達到指令值得時候，切換direction的true/false
+            if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+                direction = !direction;
+            }
+            if (direction) {
+                ctx.lineWidth++;
+            } else {
+                ctx.lineWidth--;
+            }
+        }
+        // 當滑鼠按下時，將目前滑鼠的位置設定為變數中的X、Y並讓isDrawing為true
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        });
+        // 滑鼠移動中，執行function draw
+        canvas.addEventListener('mousemove', draw);
+        // 滑鼠放開，滑鼠離開 都將isDrawing改為false不觸發function draw
+        canvas.addEventListener('mouseup', () => isDrawing = false);
+        canvas.addEventListener('mouseout', () => isDrawing = false);
     </script>
 
     <style>
