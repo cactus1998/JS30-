@@ -9,7 +9,24 @@
 </head>
 
 <body>
-    <script></script>
+    <script>
+        const pressed = []; //保存輸入值用的陣列
+        const secretCode = 'aaaaaa'; //設定的密碼
+        //監聽整個瀏覽器視窗的鍵盤動作
+        window.addEventListener('keyup', (e) => {
+            //push觸發的鍵盤輸入值到陣列中
+            pressed.push(e.key);
+            //透過運算使pressed陣列長度始終與設定密碼相同，且當超出時替換掉陣列第一個元素
+            pressed.splice(-secretCode.length - 1, pressed.length - secretCode.length);
+            //判斷輸入值陣列的內容是否與設定密碼相同
+            if (pressed.join('').includes(secretCode)) {
+                //觸發效果
+                cornify_add();
+            }
+            //在畫面中顯示輸入內容
+            document.querySelector('.inputCode').innerHTML = pressed.join('-');
+        })
+    </script>
 </body>
 
 </html>
