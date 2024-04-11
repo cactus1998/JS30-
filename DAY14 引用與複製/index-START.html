@@ -1,57 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <title>JS Reference VS Copy</title>
-  <link rel="icon" href="https://fav.farm/🔥" />
+    <meta charset="UTF-8">
+    <title>JS Reference VS Copy</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
 </head>
+
 <body>
 
-  <script>
-    // start with strings, numbers and booleans
+    <script>
+        // 從字符串、數字和布爾值開始
+        let age = 10; // 定義年齡變量
+        let age2 = age; 
+        console.log(age, age2); 
+        age = 20; 
+        console.log(age, age2); // 輸出 age 和 age2 變量的值，注意 age2 的值不變
 
-    // Let's say we have an array
-    const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
+        let name = 'Wes'; 
+        let name2 = name; 
+        console.log(name, name2);
+        name = 'Sarah'; 
+        console.log(name, name2); // 輸出 name 和 name2 變量的值，注意 name2 的值不變
 
-    // and we want to make a copy of it.
+        // 假設我們有一個數組
+        const players = ['Wes', 'Sarah', 'Ryan', 'Poppy'];
 
-    // You might think we can just do something like this:
+        // 我們想複製它
+        const team = players;
 
-    // however what happens when we update that array?
+        // 你可能會認為我們可以這樣做：
 
-    // now here is the problem!
+        // 但是當我們更新該數組時會發生什麼情況？
 
-    // oh no - we have edited the original array too!
+        // 現在問題來了！
 
-    // Why? It's because that is an array reference, not an array copy. They both point to the same array!
+        // 噢，不 - 我們也修改了原始數組！
 
-    // So, how do we fix this? We take a copy instead!
+        // 為什麼？因為這是數組引用，而不是數組副本。它們都指向同一個數組！
+        // 避免Call by refrence時會去異動到原本的陣列
+        
+        // 那麼，我們該如何解決這個問題？我們取一個副本就行了！
+        const team2 = players.slice(); // 使用 slice 方法來複製數組
 
-    // one way
+        // 另一種方法
 
-    // or create a new array and concat the old one in
+        // 或者創建一個新數組，並將舊數組連接到其中
+        const team3 = [].concat(players); // 使用 concat 方法來複製數組
 
-    // or use the new ES6 Spread
+        // 或者使用新的 ES6 展開運算符
+        const team4 = [...players]; // 使用展開運算符來複製數組
+        team4[3] = 'AAAA'; // 修改 team4 數組的第四個元素
+        console.log(team4);
 
-    // now when we update it, the original one isn't changed
+        const team5 = Array.from(players); // 使用 Array.from 方法來複製數組
 
-    // The same thing goes for objects, let's say we have a person object
+        // 現在當我們更新它時，原始數組不會更改
 
-    // with Objects
-    const person = {
-      name: 'Wes Bos',
-      age: 80
-    };
+        // 對於對象也是一樣，假設我們有一個 person 對象
 
-    // and think we make a copy:
+        // 使用對象
+        const person = {
+            name: 'Wes Bos',
+            age: 80
+        };
 
-    // how do we take a copy instead?
+        // 並且認為我們可以複製它：
+        // const captain = person;
+        // captain.number = 99;
 
-    // We will hopefully soon see the object ...spread
+        // 我們該如何取一個副本呢？
+        const cap2 = Object.assign({}, person, { number: 99, age: 12 }); // 使用 Object.assign 方法來複製對象
+        console.log(cap2); // 輸出複製後的 cap2 對象
 
-    // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
+        // 我們希望很快能看到對象的展開運算符
+        // const cap3 = {...person};
 
-  </script>
+        // 需要注意的是 - 這只是一個層級的深度複製 - 對於數組和對象都是如此。lodash 有一個 cloneDeep 方法，但是在使用之前，你應該三思。
+
+        const wes = {
+            name: 'Wes',
+            age: 100,
+            social: {
+                twitter: '@wesbos',
+                facebook: 'wesbos.developer'
+            }
+        };
+
+        console.log(wes); // 輸出 wes 對象
+
+        const dev = Object.assign({}, wes); // 使用 Object.assign 方法來複製 wes 對象
+
+        const dev2 = JSON.parse(JSON.stringify(wes)); // 使用 JSON.parse 和 JSON.stringify 方法來複製 wes 對象
+
+
+    </script>
 
 </body>
+
 </html>
