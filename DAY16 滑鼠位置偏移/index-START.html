@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Mouse Shadow</title>
   <link rel="icon" href="https://fav.farm/🔥" />
 </head>
+
 <body>
 
   <div class="hero">
@@ -12,30 +14,65 @@
   </div>
 
   <style>
-  html {
-    color: black;
-    font-family: sans-serif;
-  }
+    html {
+      color: black;
+      font-family: sans-serif;
+    }
 
-  body {
-    margin: 0;
-  }
+    body {
+      margin: 0;
+    }
 
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-  }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+    }
 
-  h1 {
-    text-shadow: 10px 10px 0 rgba(0,0,0,1);
-    font-size: 100px;
-  }
+    h1 {
+      text-shadow: 10px 10px 0 rgba(0, 0, 0, 1);
+      font-size: 100px;
+    }
   </style>
 
-<script>
-</script>
+  <script>
+    const hero = document.querySelector('.hero');
+    const text = document.querySelector('h1');
+    // 定義陰影最大偏移量
+    const walk = 100;
+
+    // 設置陰影效果的函數
+    function shadow(e) {
+      // 獲取.hero元素的高度和寬度 解構賦值
+      // console.log(e);
+      const { offsetHeight: height, offsetWidth: width } = hero;
+      let { offsetX: x, offsetY: y } = e;
+
+      // 如果觸發事件的不是.hero元素，則重新計算滑鼠座標位置
+      if (this !== e.target) {
+        x = x + e.target.offsetLeft;
+        y = y + e.target.offsetTop;
+      }
+
+      // 計算陰影的偏移量
+      const xWalk = Math.round((x / width * walk) - (walk / 2));
+      const yWalk = Math.round((y / height * walk) - (walk / 2));
+
+      // 設置陰影效果
+      text.style.textShadow = `
+        ${xWalk}px ${yWalk}px 0px rgba(0, 0, 0, 0.5),
+        ${xWalk * -1}px ${yWalk}px 0px rgba(0, 0, 0, 0.5),
+        ${yWalk}px ${xWalk * -1}px 0px rgba(0, 0, 0, 0.5),
+        ${yWalk * -1}px ${xWalk}px 0px rgba(0, 0, 0, 0.5)
+      `;
+    }
+
+    // 監聽.hero元素的mousemove事件，當滑鼠移動時調用shadow函數
+    hero.addEventListener('mousemove', shadow);
+
+  </script>
 </body>
+
 </html>
