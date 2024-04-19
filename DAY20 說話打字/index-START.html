@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Speech Detection</title>
+  <link rel="icon" href="https://fav.farm/🔥" />
+</head>
+
+<body>
+
+  <div class="words" contenteditable>
+  </div>
+
+  <script>
+    // 檢查瀏覽器是否支援 SpeechRecognition API，若不支援，則使用 Webkit 版本
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // 創建一個 SpeechRecognition 物件實例
+    const recognition = new SpeechRecognition();
+
+    // 設置是否在偵測到結果時顯示中間結果
+    recognition.interimResults = true;
+
+    // 設置語音識別的語言為英文
+    recognition.lang = 'en-US';
+
+    // 創建一個 <p> 元素
+    let p = document.createElement('p');
+    // 獲取 HTML 中 class 為 'words' 的元素
+    const words = document.querySelector('.words');
+    // 將創建的 <p> 元素添加到 class 為 'words' 的元素中
+    words.appendChild(p);
+
+    // 監聽 SpeechRecognition 的 'result' 事件，當偵測到結果時執行回調函式
+    recognition.addEventListener('result', e => {
+      // 從事件結果中取出辨識到的文本
+      const transcript = Array.from(e.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('');
+
+      // 將辨識到的文本中的 'poop', 'poo', 'shit', 'dump' 替換為 💩
+      const poopScript = transcript.replace(/poop|poo|shit|dump/gi, '💩');
+      // 將替換後的文本設置為創建的 <p> 元素的文字內容
+      p.textContent = poopScript;
+
+      // 如果偵測到的結果是最終結果，則創建一個新的 <p> 元素，繼續顯示後續結果
+      if (e.results[0].isFinal) {
+        p = document.createElement('p');
+        words.appendChild(p);
+      }
+    });
+
+    // 監聽 SpeechRecognition 的 'end' 事件，當辨識結束時執行回調函式
+    recognition.addEventListener('end', recognition.start);
+
+    // 啟動 SpeechRecognition
+    recognition.start();
+  </script>
+
+
+
+  <style>
+    html {
+      font-size: 10px;
+    }
+
+    body {
+      background: #ffc600;
+      font-family: 'helvetica neue';
+      font-weight: 200;
+      font-size: 20px;
+    }
+
+    .words {
+      max-width: 500px;
+      margin: 50px auto;
+      background: white;
+      border-radius: 5px;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+      padding: 1rem 2rem 1rem 5rem;
+      background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
+      background-size: 100% 3rem;
+      position: relative;
+      line-height: 3rem;
+    }
+
+    p {
+      margin: 0 0 3rem;
+    }
+
+    .words:before {
+      content: '';
+      position: absolute;
+      width: 4px;
+      top: 0;
+      left: 30px;
+      bottom: 0;
+      border: 1px solid;
+      border-color: transparent #efe4e4;
+    }
+  </style>
+
+</body>
+
+</html>
