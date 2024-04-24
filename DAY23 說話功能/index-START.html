@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Synthesis</title>
@@ -7,36 +8,93 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="https://fav.farm/🔥" />
 </head>
+
 <body>
 
-    <div class="voiceinator">
+  <div class="voiceinator">
 
-      <h1>The Voiceinator 5000</h1>
+    <h1>The Voiceinator 5000</h1>
 
-      <select name="voice" id="voices">
-        <option value="">Select A Voice</option>
-      </select>
+    <select name="voice" id="voices">
+      <option value="">Select A Voice</option>
+    </select>
 
-      <label for="rate">Rate:</label>
-      <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
+    <label for="rate">Rate:</label>
+    <input name="rate" type="range" min="0" max="3" value="1" step="0.1">
 
-      <label for="pitch">Pitch:</label>
+    <label for="pitch">Pitch:</label>
 
-      <input name="pitch" type="range" min="0" max="2" step="0.1">
-      <textarea name="text">Hello! I love JavaScript 👍</textarea>
-      <button id="stop">Stop!</button>
-      <button id="speak">Speak</button>
+    <input name="pitch" type="range" min="0" max="2" step="0.1">
+    <textarea name="text">你好! I love JavaScript 👍</textarea>
+    <button id="stop">Stop!</button>
+    <button id="speak">Speak</button>
 
-    </div>
+  </div>
 
-<script>
-  const msg = new SpeechSynthesisUtterance();
-  let voices = [];
-  const voicesDropdown = document.querySelector('[name="voice"]');
-  const options = document.querySelectorAll('[type="range"], [name="text"]');
-  const speakButton = document.querySelector('#speak');
-  const stopButton = document.querySelector('#stop');
-</script>
+  <script>
+    // 創建一個 SpeechSynthesisUtterance 物件，用於表示要合成的語音
+    const msg = new SpeechSynthesisUtterance();
+
+    // 儲存所有語音設定的陣列
+    let voices = [];
+    const voicesDropdown = document.querySelector('[name="voice"]');
+    const options = document.querySelectorAll('[type="range"], [name="text"]');
+    const speakButton = document.querySelector('#speak');
+    const stopButton = document.querySelector('#stop');
+    msg.text = document.querySelector('[name="text"]').value;
+
+    // 載入所有可用的語音
+    function populateVoices() {
+      voices = this.getVoices();
+      voicesDropdown.innerHTML = voices
+        .filter(voice => voice.lang.includes('en'))
+        // 產生選項的 HTML
+        .map(voice => `<option value="${voice.name}">${voice.name} (${voice.lang})</option>`)
+        .join('');
+    }
+
+    // 設定語音合成使用的語音
+    function setVoice() {
+      msg.voice = voices.find(voice => voice.name == this.value);
+      // 切換語音合成的狀態
+      toggle();
+    }
+
+    // 開關語音合成的函式，可以選擇是否重新開始合成
+    function toggle(startOver = true) {
+      // 取消現有的語音合成
+      speechSynthesis.cancel();
+      // 如果要重新開始合成，則開始合成
+      if (startOver) {
+        speechSynthesis.speak(msg);
+      }
+    }
+
+    // 設定語音合成的其他選項
+    function setOption() {
+      // 設定語音合成的相應屬性
+      msg[this.name] = this.value;
+      // 切換語音合成的狀態
+      toggle();
+    }
+
+    // 監聽語音列表的改變事件，當語音列表改變時執行 populateVoices 函式
+    speechSynthesis.addEventListener('voiceschanged', populateVoices);
+
+    // 監聽語音下拉選單的改變事件，當選擇不同語音時執行 setVoice 函式
+    voicesDropdown.addEventListener('change', setVoice);
+
+    // 監聽所有語音合成相關控制元素的改變事件，當改變時執行 setOption 函式
+    options.forEach(option => option.addEventListener('change', setOption));
+
+    // 監聽開始合成按鈕的點擊事件，當點擊時開始或停止語音合成
+    speakButton.addEventListener('click', toggle);
+
+    // 監聽停止合成按鈕的點擊事件，當點擊時停止語音合成
+    stopButton.addEventListener('click', () => toggle(false));
+
+  </script>
 
 </body>
+
 </html>
